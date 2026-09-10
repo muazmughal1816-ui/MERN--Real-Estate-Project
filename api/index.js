@@ -1,8 +1,10 @@
 import express  from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import dns from 'node:dns'; 
 import userRouter from './routes/user.route.js'
 import authRouter from './routes/auth.route.js'
+dns.setServers(["1.1.1.1", "8.8.8.8"]); 
 dotenv.config()
 
 mongoose.connect(process.env.MONGO)
