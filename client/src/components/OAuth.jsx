@@ -1,6 +1,6 @@
 import React from 'react'
 
-const OAuth = () => {
+const OAuth= () => {
     const handleGoogleClick = async ()=>{
         try {
             
