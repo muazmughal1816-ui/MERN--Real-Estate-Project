@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux"
 import { useRef, useState, useEffect } from "react"
-import {getDownloadURL, getStorage, ref , uploadBytesResumable} from 'firebase/storage';
-import {app} from '../firebase'
+import { ref as dbRef, set, getDatabase } from 'firebase/database'; 
+import { app, db } from '../firebase.js'; 
 
 const Profile = () => {
   const fileRef = useRef(null);
@@ -19,30 +19,49 @@ const Profile = () => {
     }
   }, [file]);
 
-  const handleFileUpload = (file) =>{
-    const storage = getStorage(app)
-    const fileName = new Date().getTime() + file.name;
-    const storageRef = ref(storage, fileName)
-    const upLoadTask = uploadBytesResumable(storageRef, file)
+     const handleFileUpload = (file) => {
+    // 1. Check file size limit (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setFileUploadError(true);
+      return;
+    }
 
-    upLoadTask.on('state_changed',
-      (snapshot) =>{
-        const progress = (snapshot.bytesTransferred /
-          snapshot.totalBytes) * 100;
-          setFilePerc(Math.round(progress))
-      },
-      (error)=>{
+    setFileUploadError(false);
+    setFilePerc(20); // Show "Uploading 20%" status
+
+    // 2. Clear out forbidden chars from the filename to prevent DB path crashes
+    const cleanFileName = file.name.replace(/[.#$[\]]/g, '_');
+    const dbFileName = new Date().getTime() + '_' + cleanFileName;
+
+    const reader = new FileReader();
+    // Start reading the raw file data as a Base64 text string
+    reader.readAsDataURL(file); 
+    
+    reader.onload = async () => {
+      const base64ImageString = reader.result;
+      setFilePerc(100); // Image string compilation successfully done!
+
+      try {
+        // 3. FIXED: Save that text string directly into the database using 'dbRef'
+        await set(dbRef(db, '/' + dbFileName), {
+          avatar: base64ImageString,
+        });
+
+        // Update local state instantly so the image flips on the screen
+        setFormData({ ...formData, avatar: base64ImageString });
+        console.log("Image uploaded successfully!");
+      } catch (error) {
         setFileUploadError(true);
-      },
-      ()=> {
-        getDownloadURL(upLoadTask.snapshot.ref).then
-        ((downloadURL)=>
-          setFormData({ ...formData, avatar: downloadURL})
-        );
+        console.error("Database tracking block error:", error);
       }
-    );
-
+    };
   };
+
+
+  // 1. Add this function right below your handleFileUpload block
+const handleChange = (e) => {
+  setFormData({ ...formData, [e.target.id]: e.target.value });
+};
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -66,9 +85,9 @@ const Profile = () => {
               ""
             )}
          </p>
-        <input className="border p-3 rounded-lg" type="text" placeholder="username" id="username" />
-        <input className="border p-3 rounded-lg" type="email" placeholder="email" id="email" />
-        <input className="border p-3 rounded-lg" type="password" placeholder="password" id="password" />
+        <input  defaultValue={currentUser.username} onChange={handleChange}  className="border p-3 rounded-lg" type="text" placeholder="username" id="username" />
+        <input  defaultValue={currentUser.email} onChange={handleChange}  className="border p-3 rounded-lg" type="email" placeholder="email" id="email" />
+        <input  onChange={handleChange}  className="border p-3 rounded-lg" type="password" placeholder="password" id="password" />
         <button className="bg-green-400 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">update</button>
       </form>
       <div className="flex justify-between mt-5">
