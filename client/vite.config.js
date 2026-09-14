@@ -11,7 +11,6 @@ export default defineConfig({
         secure: false,
       },
     },
-    // ⚠️ YEH OBJECT ADD KAREIN JO BROWSER KA SECURITY BLOC KHALI KARTA HAI ⚠️
     headers: {
       'Access-Control-Allow-Origin': '*',
     },

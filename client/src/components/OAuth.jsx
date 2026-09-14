@@ -3,6 +3,7 @@ import { app } from '../firebase';
 import { useDispatch } from 'react-redux'; 
 import { signInSuccess } from "../redux/user/userSlice.js";
 import { useNavigate } from 'react-router-dom';
+// import { useEffect } from 'react';
 
 const OAuth= () => {
       const dispatch = useDispatch();
@@ -29,9 +30,12 @@ const OAuth= () => {
             
         }
     }
+
+    
+
   return (
     <button onClick={handleGoogleClick} type='button'
-     className='bg-fuchsia-500 text-white rounded-lg uppercase hover:opacity-85'>Continue with google</button>
+     className='bg-fuchsia-500 text-white rounded-lg uppercase p-2 hover:opacity-85'>Continue with google</button>
   )
 }
 

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 const Header = () => {
     const {currentUser} = useSelector(state => state.user)
-     console.log("Redux ka live data:", currentUser);
+    //  console.log("Redux ka live data:", currentUser);
   return (
     <header className='border-slate-200 shadow-md mb-1'>
         <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
