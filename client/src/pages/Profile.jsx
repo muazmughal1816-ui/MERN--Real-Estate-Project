@@ -4,6 +4,7 @@ import { ref as dbRef, set, getDatabase } from 'firebase/database';
 import { app, db } from '../firebase.js'; 
 import { updateUserStart,updateUserSuccess, updateUserFailure, deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserStart } from "../redux/user/userSlice.js";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
@@ -160,6 +161,9 @@ const handleSignOut = async () =>{
         <input  defaultValue={currentUser.email} onChange={handleChange}  className="border p-3 rounded-lg" type="email" placeholder="email" id="email" />
         <input  onChange={handleChange}  className="border p-3 rounded-lg" type="password" placeholder="password" id="password" />
         <button disabled= {loading} className="bg-green-400 text-white rounded-lg p-3 cursor-pointer uppercase hover:opacity-95 disabled:opacity-80">{loading ? 'Loading...' : 'Update'}</button>
+        <Link className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95" to={"/create-listing"} >
+          Create Listing 
+        </Link>
       </form>
       <div className="flex justify-between mt-5">
         <span onClick={handleDeleteUser} 
