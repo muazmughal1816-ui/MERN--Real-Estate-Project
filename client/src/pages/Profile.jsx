@@ -6,6 +6,7 @@ import { updateUserStart,updateUserSuccess, updateUserFailure, deleteUserFailure
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+// import Listing from "../api/models/listing.model.js";
 
 const Profile = () => {
   const fileRef = useRef(null);
@@ -15,6 +16,8 @@ const Profile = () => {
   const [fileUploadError, setFileUploadError] = useState(false)
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false)
+  const [showListingsError, setShowListingsError] = useState(false)
+  const [userListings, setUserListings] = useState([])
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
@@ -125,6 +128,8 @@ const handleSignOut = async () =>{
       dispatch(deleteUserFailure(data.message));
       return;
     }
+
+    setUserListings(data);
     dispatch(deleteUserSuccess(data))
      navigate('/sign-in');
   } catch (error) {
@@ -132,6 +137,24 @@ const handleSignOut = async () =>{
   }
   // console.log(error);
   
+}
+
+const handleShowListings = async () => {
+  try {
+    setShowListingsError(false);
+    const res = await fetch(`/api/user/listings/${currentUser._id}`, {
+      method: 'GET',
+      credentials: 'include', // <-- CRITICAL: Sends your JWT access cookie to the backend middleware!
+    });
+    const data = await res.json();
+    if (data.success === false){
+      setShowListingsError(true);
+      return;
+    }
+      setUserListings(data); 
+  } catch (error) {
+    setShowListingsError(true);
+  }
 }
 
   return (
@@ -174,7 +197,30 @@ const handleSignOut = async () =>{
 
       <p className="text-red-700 mt-5">{error ? error : ''}</p>
       <p className="text-green-700 mt-5">{updateSuccess ? 'User is updated successfully!' : ''}</p>
-    </div>
+      <button onClick={handleShowListings} 
+      className="text text-blue-700 w-full">Show Listings</button>
+      <p className="text-red-700 mt-5">{showListingsError ? 'Error showing listings' : ''}</p>
+      
+      {userListings && userListings.length > 0 &&
+      <div className="flex flex-col gap-4">
+        <h1 className="text-center mt-7 text-2xl font-semibold">Your Listing</h1>
+        {userListings.map((listing) => 
+        <div key={listing._id} className="border border-slate-400 rounded-lg p-3 flex justify-between items-center gap-4">
+         <Link to={`/listing/$(listing._id)`}>
+           <img className="h-18 w-20 object-contain " src={listing.imageUrls[0]} alt="listing cover" />
+         </Link>
+         <Link className="flex-1 text-slate-700 font-semibold hover:underline truncate" to={`/listing/$(listing._id)`}>
+          <p >{listing.name}</p>
+         </Link>
+         <div className="flex flex-col">
+           <button className="text-red-700 uppercase">Delete</button>
+           <button className="text-green-700 uppercase">Edit</button>
+         </div>
+        </div>
+        )}
+
+      </div>}
+  </div>
   )
 }
 

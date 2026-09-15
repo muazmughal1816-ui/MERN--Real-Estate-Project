@@ -1,4 +1,5 @@
 import { errorHandler } from "./error.js";
+// import cookieParser from 'cookie-parser';
 import jwt from "jsonwebtoken";
 
 export const verifyToken = (req, res,next) => {
