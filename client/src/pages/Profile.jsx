@@ -155,6 +155,27 @@ const handleShowListings = async () => {
   } catch (error) {
     setShowListingsError(true);
   }
+};
+
+const handleListingDelete =async (listingId) => {
+  try {
+    const res = await fetch(`/api/listing/delete/${listingId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    const data = await res.json();
+    if(data.success === false) {
+      console.log(data.message);
+      return;
+    }
+
+    setUserListings((prev) => 
+      prev.filter((listing) => listing._id !== listingId));
+  } catch (error) {
+    console.log(error.message);
+    
+  }
+  
 }
 
   return (
@@ -198,7 +219,7 @@ const handleShowListings = async () => {
       <p className="text-red-700 mt-5">{error ? error : ''}</p>
       <p className="text-green-700 mt-5">{updateSuccess ? 'User is updated successfully!' : ''}</p>
       <button onClick={handleShowListings} 
-      className="text text-blue-700 w-full">Show Listings</button>
+      className="text text-blue-700 w-full cursor-pointer hover:underline">Show Listings</button>
       <p className="text-red-700 mt-5">{showListingsError ? 'Error showing listings' : ''}</p>
       
       {userListings && userListings.length > 0 &&
@@ -206,15 +227,18 @@ const handleShowListings = async () => {
         <h1 className="text-center mt-7 text-2xl font-semibold">Your Listing</h1>
         {userListings.map((listing) => 
         <div key={listing._id} className="border border-slate-400 rounded-lg p-3 flex justify-between items-center gap-4">
-         <Link to={`/listing/$(listing._id)`}>
+         <Link to={`/listing/${listing._id}`}>
            <img className="h-18 w-20 object-contain " src={listing.imageUrls[0]} alt="listing cover" />
          </Link>
          <Link className="flex-1 text-slate-700 font-semibold hover:underline truncate" to={`/listing/$(listing._id)`}>
           <p >{listing.name}</p>
          </Link>
          <div className="flex flex-col">
-           <button className="text-red-700 uppercase">Delete</button>
-           <button className="text-green-700 uppercase">Edit</button>
+            {/* 🛠️ RESTORED: Connected delete listener accurately */}
+                <button onClick={() => handleListingDelete(listing._id)} type="button" className="text-red-700 uppercase font-semibold text-sm hover:opacity-75 cursor-pointer">Delete</button>
+                <Link to={`/update-listing/${listing._id}`}>
+                  <button type="button" className="text-green-700 uppercase cursor-pointer font-semibold text-sm hover:opacity-75 mt-1">Edit</button>
+                </Link>
          </div>
         </div>
         )}
