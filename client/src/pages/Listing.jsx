@@ -6,6 +6,8 @@ import SwiperCore from 'swiper';
 import {Navigation} from 'swiper/modules'
 import 'swiper/css/bundle'
 import { FaBath, FaBed, FaChair, FaMapMarkedAlt, FaParking, FaShare } from "react-icons/fa";
+import {useSelector} from 'react-redux';
+import Contact from "../components/Contact";
 
 
 const Listing = () => {
@@ -14,7 +16,12 @@ const Listing = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false)
     const [copied, setCopied] = useState(false); 
+    const [contact, setContact] = useState(false);
     const params = useParams();
+    const {currentUser} = useSelector((state) => state.user);
+
+    console.log(currentUser._id, listing?.userRef);
+    
     useEffect(() => {
      const fetchListing = async () => {
         try {
@@ -29,6 +36,11 @@ const Listing = () => {
             setListing(data);
             setLoading(false);
             setError(false);
+
+              // 🛠️ FIXED: Log values safely inside the lifecycle hook after data successfully resolves
+            // console.log("Logged-In User ID:", currentUser?._id);
+            // console.log("Listing Owner UserRef:", data?.userRef);
+
         } catch (error) {
             setError(true);
             setLoading(false);
@@ -80,7 +92,7 @@ const Listing = () => {
                 {listing.address}
             </p>
             <div className="flex gap-4">
-                <p className="bg-red-900 w-full max-w-[200%] text-white text-center rounded-md">
+                <p className="bg-red-900 w-full max-w-[200%] p-2 cursor-pointer text-white text-center rounded-md">
                     {listing.type === 'rent' ? 'For Rent' : 'For Sale'}
                 </p>
                 {
@@ -97,7 +109,7 @@ const Listing = () => {
             </span>
             {listing.description}
         </p>
-        <ul className="text-green-900 font-semibold text-sm flex-wrap items-center gap-4 sm:gap-6">
+        <ul className="text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6">
             <li className="flex items-center gap-1 whitespace-nowrap ">
                 <FaBed className="text-lg"/>
                 {listing.bedrooms > 1 ? `${listing.bedrooms} beds` : `${listing.bedrooms} bed`}
@@ -118,6 +130,14 @@ const Listing = () => {
                 {listing.furnished ? 'Furnished' : 'unfurnished'}
             </li>
         </ul>
+       {/* 🛠️ FIXED: Wrapped in String() to guarantee a flawless comparison match */}
+     {currentUser && listing.userRef !== currentUser._id && !contact && (
+      <button onClick={()=>setContact(true)} 
+      className="bg-slate-700 text-white rounded-lg uppercase cursor-pointer hover:opacity-95 p-3 mt-4">
+        Contact landlord
+      </button>
+     )}
+      {contact && <Contact listing={listing}/>}
         </div>
         </div>
         }

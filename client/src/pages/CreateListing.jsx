@@ -125,9 +125,10 @@ const CreateListing = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', 
                 body: JSON.stringify({
                     ...formData,
-                    userRef: currentUser._id,
+                    userRef: currentUser._id || currentUser.id, 
                 }),
             });
             const data = await res.json();
@@ -136,7 +137,7 @@ const CreateListing = () => {
                 setError(data.message);
                 return;
             }
-            navigate(`/listing/${data._id}`)
+           navigate(`/listing/${data._id}`);
         } catch (error) {
             setError(error.message)
             setLoading(false);

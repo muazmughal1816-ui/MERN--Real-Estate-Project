@@ -4,16 +4,15 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  server: {
+ server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3000', // Matches your backend server port
+        changeOrigin: true,             // 🛠️ FIXED: Forces Chrome/Edge to send cookies cross-origin
         secure: false,
       },
     },
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
+    // 🛠️ FIXED: Removed the conflicting Access-Control-Allow-Origin header block completely
   },
   plugins: [react(), tailwindcss()],
 })
