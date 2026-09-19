@@ -204,7 +204,7 @@ const CreateListing = () => {
                     
                     <div className='flex items-center gap-2'>
                         <input onChange={handleChange} value={formData.regularPrices}
-                        className='p-3 border border-gray-400 rounded-lg' type="number" id='regularPrices' min='50' max='100000' required />
+                        className='p-3 border border-gray-400 rounded-lg' type="number" id='regularPrices' min='50' max='10000000' required />
                         <div className='flex flex-col items-center'>
                         <p>Regular price</p>
                         <span className='text-xs'>($ / month)</span>
@@ -213,7 +213,7 @@ const CreateListing = () => {
                     {formData.offer && (
                     <div className='flex items-center gap-2'>
                         <input onChange={handleChange} value={formData.discountedPrice} 
-                        className='p-3 border border-gray-400 rounded-lg' type="number" id='discountedPrice' min='0' max='100000' required />
+                        className='p-3 border border-gray-400 rounded-lg' type="number" id='discountedPrice' min='0' max='10000000' required />
                         <div className='flex flex-col items-center'>
                         <p>Discounted price</p>
                         <span className='text-xs'>($ / month)</span>

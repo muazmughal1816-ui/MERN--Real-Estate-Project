@@ -20,7 +20,7 @@ const Listing = () => {
     const params = useParams();
     const {currentUser} = useSelector((state) => state.user);
 
-    console.log(currentUser._id, listing?.userRef);
+    console.log(currentUser?._id, listing?.userRef);
     
     useEffect(() => {
      const fetchListing = async () => {
@@ -98,7 +98,7 @@ const Listing = () => {
                 {
                     listing.offer && (
                         <p className="bg-green-900 w-full max-w-[200%] text-white text-center p-1 rounded-md">
-                            ${listing.regularPrices - +listing.discountedPrice}
+                            ${+listing.regularPrices - +listing.discountedPrice} OFF
                         </p>
                     )
                 }
