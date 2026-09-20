@@ -14,5 +14,5 @@ export default defineConfig({
     },
     // 🛠️ FIXED: Removed the conflicting Access-Control-Allow-Origin header block completely
   },
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss()]
 })

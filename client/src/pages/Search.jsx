@@ -16,7 +16,7 @@ const Search = () => {
 
     const [loading, setLoading] = useState(false)
     const [listings, setListings] = useState([])
-    console.log(listings);
+    const [showMore, setShowMore] = useState(false);
     
     
     useEffect(() => {
@@ -53,9 +53,16 @@ const Search = () => {
 
         const fetchListings = async () => {
             setLoading(true);
+            setShowMore(false);
             const searchQuery = urlParams.toString();
             const res = await fetch(`/api/listing/get?${searchQuery}`);
             const data = await res.json();
+             // 🛠️ FIXED: If the array returned matches your limit (9), show the button!
+        if (Array.isArray(data) && data.length === 8) {
+            setShowMore(true);
+        } else {
+            setShowMore(false);
+        }
             setListings(data);
             setLoading(false)
         }
@@ -101,6 +108,25 @@ const Search = () => {
         urlParams.set('order', sidebardata.order)
         const searchQuery = urlParams.toString()
         navigate(`/search?${searchQuery}`);
+    }
+
+    const onShowMoreClick = async () => {
+        const numberOfListings = listings.length;
+        const startIndex = numberOfListings;
+        const urlParams = new URLSearchParams(location.search);
+        urlParams.set('startIndex', startIndex);
+        const searchQuery = urlParams.toString();
+        const res = await fetch(`/api/listing/get?${searchQuery}`);
+        const data = await res.json();
+          if (Array.isArray(data)) {
+        if (data.length < 9) {
+            setShowMore(false);
+        } else {
+            setShowMore(true);
+        }
+
+            setListings([...listings, ...data]);
+        }
     }
 
   return (
@@ -179,9 +205,16 @@ const Search = () => {
                     <p className='text-xl text-slate-700 text-center w-full'>Loading...</p>
                 )}
 
-               {!loading && listings && listings.map((listing) => {
+              {!loading && Array.isArray(listings) && listings.map((listing) => {
                     return <Listingitem key={listing._id} listing={listing}/>
                 })}
+
+                 {/* 🛠️ FIXED: Fully closed the Show More action layout button block smoothly */}
+                {showMore && (
+                    <button onClick={onShowMoreClick} className='text-green-700 hover:underline p-7 text-center w-full font-semibold cursor-pointer'>
+                        Show More
+                    </button>
+                )}
             </div>
         </div>
     </div>
